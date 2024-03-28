@@ -1,19 +1,49 @@
 "use client";
-import InviteUsersModal from "@/components/shared/InviteUsersModal";
+import InviteUsersModal from "@/components/modals/InviteUsersModal";
+import useUserId from "@/hooks/useUserId";
+import GroupProps from "@/props/GroupProps";
 import { useParams } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-const InviteButton = () => {
+//Props
+interface InviteButtonProps {
+  groups: GroupProps[];
+}
+
+const InviteButton: React.FC<InviteButtonProps> = ({ groups }) => {
+  // States
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  // Hooks
   const params = useParams();
+  const userId = useUserId();
+
+  useEffect(() => {
+    if (userId && groups.length > 0) {
+      const index = groups.findIndex((group) => group._id === params.groupId);
+      if (index > -1 && groups[index].admin._id === userId) {
+        setIsAdmin(true);
+      } else {
+        setIsAdmin(false);
+      }
+    }
+  }, [userId, groups, params]);
 
   const toggleModal = () => setIsModalOpen(!isModalOpen);
   return (
-    params.group_slug && (
+    params.groupId &&
+    isAdmin && (
       <>
         {/* Modal to invite users using email / link */}
         {isModalOpen && (
-          <InviteUsersModal closeModal={toggleModal} variant="NAVBAR" />
+          <InviteUsersModal
+            groupData={{
+              adminId: typeof userId === "string" ? userId : "",
+              groupId: params.groupId.toString(),
+            }}
+            closeModal={toggleModal}
+            variant="NAVBAR"
+          />
         )}
         {/* Invite Button */}
         <button

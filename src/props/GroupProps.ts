@@ -1,12 +1,18 @@
 interface GroupProps {
-  id: string;
+  _id: string;
   name: string;
   image: string;
-  slug: string;
-  // members: string[];
-  // invites: string[];
-  // createdAt: Date;
-  // updatedAt: Date;
+  admin: GroupUsers;
+  members: GroupUsers[] | string[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+interface GroupUsers {
+  _id: string;
+  username: string;
+  email: string;
+  profilePic: string;
 }
 
 export default GroupProps;

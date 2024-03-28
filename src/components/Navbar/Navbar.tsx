@@ -1,21 +1,19 @@
+import GroupProps from "@/props/GroupProps";
 import { UserButton } from "@clerk/nextjs";
 import InviteButton from "./InviteButton";
+import SelectionMenu from "../groupSelection/SelectionMenu";
 
-const Navbar = () => {
+interface NavbarProps {
+  groups: GroupProps[];
+}
+
+const Navbar: React.FC<NavbarProps> = async ({ groups }) => {
   return (
-    <nav className="flex h-16 items-center">
-      {/* Search input field */}
-      <div className="flex-1 px-1 sm:px-4">
-        <label className="sr-only">Search</label>
-        <input
-          className="w-11/12 max-w-[30rem] h-10 border border-stone-300 rounded-lg px-4 bg-transparent outline-none"
-          placeholder="Search"
-        />
-      </div>
-
+    <nav className="flex h-16 items-center justify-between">
+      <SelectionMenu groups={groups} />
       {/* Action buttons */}
       <div className="w-fit flex gap-2 sm:gap-5 px-2 items-center">
-        <InviteButton />
+        {groups && <InviteButton groups={groups} />}
         <UserButton afterSignOutUrl="/" />
       </div>
     </nav>

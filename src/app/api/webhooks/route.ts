@@ -2,7 +2,7 @@ import { Webhook } from "svix";
 import { headers } from "next/headers";
 import { WebhookEvent } from "@clerk/nextjs/server";
 import axios from "axios";
-import { clerkClient } from "@clerk/nextjs";
+import { clerkClient, redirectToSignIn } from "@clerk/nextjs";
 
 export async function POST(req: Request) {
   try {
@@ -72,24 +72,62 @@ export async function POST(req: Request) {
         profilePic: image_url,
       };
 
-      const response = await axios.post(
-        `${process.env.SERVER_URL}/api/v1/user/signupwithclerk`,
-        { user }
-      );
+      try {
+        const response = await axios.post(
+          `${process.env.SERVER_URL}/api/v1/user/signupwithclerk`,
+          { user },
+          {
+            headers: {
+              accessToken: process.env.NEXT_PUBLIC_SERVER_ACCESS_TOKEN,
+            },
+          }
+        );
 
-      if (response) {
-        await clerkClient.users.updateUserMetadata(id, {
-          publicMetadata: {
-            userId: response.data.userId,
-          },
-        });
+        if (response) {
+          await clerkClient.users.updateUserMetadata(id, {
+            publicMetadata: {
+              userId: response.data.userId,
+            },
+          });
+        }
+      } catch (error) {
+        await clerkClient.users.deleteUser(id);
+        redirectToSignIn();
       }
-      console.log(response.data);
+    } else if (eventType === "user.updated") {
+      const {
+        id,
+        email_addresses,
+        image_url,
+        first_name,
+        last_name,
+        username,
+      } = evt.data;
+
+      const { userId } = evt.data.public_metadata;
+
+      const user = {
+        clerkId: id,
+        email: email_addresses[0].email_address,
+        username: username!,
+        firstName: first_name,
+        lastName: last_name,
+        profilePic: image_url,
+      };
+
+      const response = await axios.put(
+        `${process.env.SERVER_URL}/api/v1/user/updateUser/${userId}`,
+        { user },
+        {
+          headers: {
+            accessToken: process.env.SERVER_ACCESS_TOKEN,
+          },
+        }
+      );
     }
 
     return new Response("", { status: 200 });
   } catch (error) {
-    console.log("from route");
     console.error(error);
     return new Response("", { status: 500 });
   }

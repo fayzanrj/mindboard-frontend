@@ -23,3 +23,10 @@ body {
   left: 50%;
   transform: translate(-50%, -50%);
 }
+
+.LANDING_PAGE {
+  background-image: url("../../public/background.jpg");
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}

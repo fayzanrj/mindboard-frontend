@@ -1,12 +1,24 @@
+import GroupProps from "./GroupProps";
+
 interface BoardProps {
-  id: string;
+  _id: string;
   name: string;
-  createdBy: string;
+  group: GroupProps;
+  createdBy: User;
   isFavOf: string[];
-  lastEditedBy: string;
+  lastUpdatedBy: User;
   image: string;
-  // createdAt: Date;
-  // updatedAt: Date;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+interface User {
+  _id: string;
+  username: string;
+  email: string;
+  profilePic: string;
+  firstName: string;
+  lastName: string;
 }
 
 export default BoardProps;
