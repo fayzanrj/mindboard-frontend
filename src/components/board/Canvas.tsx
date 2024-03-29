@@ -94,7 +94,8 @@ const Canvas = () => {
         | LayerType.Rectangle
         | LayerType.Note
         | LayerType.Path
-        | LayerType.Text,
+        | LayerType.Text
+        | LayerType.Line,
       position: Point
     ) => {
       const limit: number = Number.parseInt(process.env.LAYERS_LIMITS!);
@@ -111,7 +112,7 @@ const Canvas = () => {
         type: layerType,
         x: position.x,
         y: position.y,
-        height: 100,
+        height: layerType === LayerType.Line ? 2 : 100,
         width: 100,
         fill: lastUsedColor,
       });

@@ -9,6 +9,7 @@ import Note from "./Note";
 import Path from "./Path";
 import { rgbToHex } from "@/libs/RgbToHex";
 import { toast } from "sonner";
+import Line from "./Line";
 
 // Props
 interface LayerPreviewProps {
@@ -46,6 +47,15 @@ const LayerPreview: React.FC<LayerPreviewProps> = ({
     case LayerType.Rectangle:
       return (
         <Rectangle
+          id={id}
+          layer={layer}
+          selectionColor={selectionColor}
+          onPointerDown={onLayerPointerDown}
+        />
+      );
+    case LayerType.Line:
+      return (
+        <Line
           id={id}
           layer={layer}
           selectionColor={selectionColor}

@@ -19,14 +19,21 @@ const SelectionBox: React.FC<SelectionBoxProps> = memo(
       me.presence.selection.length === 1 ? me.presence.selection[0] : null
     );
 
-    // Cheking if selected layer's layertype is not path i.e. pen
-    const isShowingHandles = useStorage(
-      (root) =>
-        soleLayerId && root.layers.get(soleLayerId)?.type !== LayerType.Path
+    const layer = useStorage(
+      (root) => soleLayerId && root.layers.get(soleLayerId)
     );
+
+    // If layer's type is a PATH i.e. pen then we will not resize it
+    const isShowingHandles = layer && layer.type !== LayerType.Path;
+    // If layer's type is a line then we will only resize it's x axis
+    const showOnlyMiddleHandles = layer && layer.type === LayerType.Line;
 
     // Getting new coordinates everytime the size of the selected layers sizes
     const bounds = useSelectionBounds();
+
+    // Selection box height and weight
+    const boundsHeight = showOnlyMiddleHandles ? 3 : bounds?.height || 2;
+    const boundsWidth = bounds?.width || 100;
 
     if (!bounds) return null;
 
@@ -36,75 +43,85 @@ const SelectionBox: React.FC<SelectionBoxProps> = memo(
           className="fill-transparent stroke-blue-500 stroke-1 pointer-events-none"
           style={{
             transform: `translate(${bounds.x}px , ${bounds.y}px)`,
+            paddingBottom: showOnlyMiddleHandles ? "1px" : 0,
           }}
           x={0}
           y={0}
-          width={bounds.width}
-          height={bounds.height}
+          width={showOnlyMiddleHandles ? boundsWidth + 2 : boundsWidth}
+          height={boundsHeight}
         />
 
         {isShowingHandles && (
           <>
             {/* Top left */}
-            <rect
-              className="fill-white stroke-blue-500 stroke-1"
-              x={0}
-              y={0}
-              style={{
-                cursor: "nwse-resize",
-                width: `${HANDLE_WIDTH}px`,
-                height: `${HANDLE_WIDTH}px`,
-                transform: `translate(${bounds.x - HANDLE_WIDTH / 2}px , ${
-                  bounds.y - HANDLE_WIDTH / 2
-                }px) `,
-              }}
-              onPointerDown={(e) => {
-                e.stopPropagation();
-                onResizeHandlePointerDown(Side.Top + Side.Left, bounds);
-              }}
-            />
+            {!showOnlyMiddleHandles && (
+              <rect
+                className="fill-white stroke-blue-500 stroke-1"
+                x={0}
+                y={0}
+                style={{
+                  cursor: "nwse-resize",
+                  width: `${HANDLE_WIDTH}px`,
+                  height: `${HANDLE_WIDTH}px`,
+                  transform: `translate(${bounds.x - HANDLE_WIDTH / 2}px , ${
+                    bounds.y - HANDLE_WIDTH / 2
+                  }px) `,
+                }}
+                onPointerDown={(e) => {
+                  e.stopPropagation();
+                  onResizeHandlePointerDown(Side.Top + Side.Left, bounds);
+                }}
+              />
+            )}
 
             {/* Top middle */}
-            <rect
-              className="fill-white stroke-blue-500 stroke-1"
-              x={0}
-              y={0}
-              style={{
-                cursor: "ns-resize",
-                width: `${HANDLE_WIDTH}px`,
-                height: `${HANDLE_WIDTH}px`,
-                transform: `translate(${
-                  bounds.x + bounds.width! / 2 - HANDLE_WIDTH / 2
-                }px , ${bounds.y - HANDLE_WIDTH / 2}px) `,
-              }}
-              onPointerDown={(e) => {
-                e.stopPropagation();
 
-                onResizeHandlePointerDown(Side.Top, bounds);
-              }}
-            />
+            {!showOnlyMiddleHandles && (
+              <rect
+                className="fill-white stroke-blue-500 stroke-1"
+                x={0}
+                y={0}
+                style={{
+                  cursor: "ns-resize",
+                  width: `${HANDLE_WIDTH}px`,
+                  height: `${HANDLE_WIDTH}px`,
+                  transform: `translate(${
+                    bounds.x + boundsWidth! / 2 - HANDLE_WIDTH / 2
+                  }px , ${bounds.y - HANDLE_WIDTH / 2}px) `,
+                }}
+                onPointerDown={(e) => {
+                  e.stopPropagation();
+
+                  onResizeHandlePointerDown(Side.Top, bounds);
+                }}
+              />
+            )}
 
             {/* Top right */}
-            <rect
-              className="fill-white stroke-blue-500 stroke-1"
-              x={0}
-              y={0}
-              style={{
-                cursor: "ne-resize",
-                width: `${HANDLE_WIDTH}px`,
-                height: `${HANDLE_WIDTH}px`,
-                transform: `translate(${
-                  bounds.x + bounds.width! - HANDLE_WIDTH / 2
-                }px , ${bounds.y - HANDLE_WIDTH / 2}px) `,
-              }}
-              onPointerDown={(e) => {
-                e.stopPropagation();
 
-                onResizeHandlePointerDown(Side.Top + Side.Right, bounds);
-              }}
-            />
+            {!showOnlyMiddleHandles && (
+              <rect
+                className="fill-white stroke-blue-500 stroke-1"
+                x={0}
+                y={0}
+                style={{
+                  cursor: "ne-resize",
+                  width: `${HANDLE_WIDTH}px`,
+                  height: `${HANDLE_WIDTH}px`,
+                  transform: `translate(${
+                    bounds.x + boundsWidth! - HANDLE_WIDTH / 2
+                  }px , ${bounds.y - HANDLE_WIDTH / 2}px) `,
+                }}
+                onPointerDown={(e) => {
+                  e.stopPropagation();
+
+                  onResizeHandlePointerDown(Side.Top + Side.Right, bounds);
+                }}
+              />
+            )}
 
             {/* Middle left */}
+
             <rect
               className="fill-white stroke-blue-500 stroke-1"
               x={0}
@@ -114,7 +131,7 @@ const SelectionBox: React.FC<SelectionBoxProps> = memo(
                 width: `${HANDLE_WIDTH}px`,
                 height: `${HANDLE_WIDTH}px`,
                 transform: `translate(${bounds.x - HANDLE_WIDTH / 2}px , ${
-                  bounds.y + bounds.height! / 2 - HANDLE_WIDTH / 2
+                  bounds.y + boundsHeight! / 2 - HANDLE_WIDTH / 2
                 }px) `,
               }}
               onPointerDown={(e) => {
@@ -125,6 +142,7 @@ const SelectionBox: React.FC<SelectionBoxProps> = memo(
             />
 
             {/* Middle right */}
+
             <rect
               className="fill-white stroke-blue-500 stroke-1"
               x={0}
@@ -134,8 +152,8 @@ const SelectionBox: React.FC<SelectionBoxProps> = memo(
                 width: `${HANDLE_WIDTH}px`,
                 height: `${HANDLE_WIDTH}px`,
                 transform: `translate(${
-                  bounds.x + bounds.width! - HANDLE_WIDTH / 2
-                }px , ${bounds.y + bounds.height! / 2 - HANDLE_WIDTH / 2}px) `,
+                  bounds.x + boundsWidth! - HANDLE_WIDTH / 2
+                }px , ${bounds.y + boundsHeight! / 2 - HANDLE_WIDTH / 2}px) `,
               }}
               onPointerDown={(e) => {
                 e.stopPropagation();
@@ -145,62 +163,70 @@ const SelectionBox: React.FC<SelectionBoxProps> = memo(
             />
 
             {/* Bottom left */}
-            <rect
-              className="fill-white stroke-blue-500 stroke-1"
-              x={0}
-              y={0}
-              style={{
-                cursor: "ne-resize",
-                width: `${HANDLE_WIDTH}px`,
-                height: `${HANDLE_WIDTH}px`,
-                transform: `translate(${bounds.x - HANDLE_WIDTH / 2}px , ${
-                  bounds.y + bounds.height! - HANDLE_WIDTH / 2
-                }px) `,
-              }}
-              onPointerDown={(e) => {
-                e.stopPropagation();
-                onResizeHandlePointerDown(Side.Bottom + Side.Left, bounds);
-              }}
-            />
+
+            {!showOnlyMiddleHandles && (
+              <rect
+                className="fill-white stroke-blue-500 stroke-1"
+                x={0}
+                y={0}
+                style={{
+                  cursor: "ne-resize",
+                  width: `${HANDLE_WIDTH}px`,
+                  height: `${HANDLE_WIDTH}px`,
+                  transform: `translate(${bounds.x - HANDLE_WIDTH / 2}px , ${
+                    bounds.y + boundsHeight! - HANDLE_WIDTH / 2
+                  }px) `,
+                }}
+                onPointerDown={(e) => {
+                  e.stopPropagation();
+                  onResizeHandlePointerDown(Side.Bottom + Side.Left, bounds);
+                }}
+              />
+            )}
 
             {/* Bottom middle */}
-            <rect
-              className="fill-white stroke-blue-500 stroke-1"
-              x={0}
-              y={0}
-              style={{
-                cursor: "ns-resize",
-                width: `${HANDLE_WIDTH}px`,
-                height: `${HANDLE_WIDTH}px`,
-                transform: `translate(${
-                  bounds.x + bounds.width! / 2 - HANDLE_WIDTH / 2
-                }px , ${bounds.y + bounds.height! - HANDLE_WIDTH / 2}px) `,
-              }}
-              onPointerDown={(e) => {
-                e.stopPropagation();
-                onResizeHandlePointerDown(Side.Bottom, bounds);
-              }}
-            />
+
+            {!showOnlyMiddleHandles && (
+              <rect
+                className="fill-white stroke-blue-500 stroke-1"
+                x={0}
+                y={0}
+                style={{
+                  cursor: "ns-resize",
+                  width: `${HANDLE_WIDTH}px`,
+                  height: `${HANDLE_WIDTH}px`,
+                  transform: `translate(${
+                    bounds.x + boundsWidth! / 2 - HANDLE_WIDTH / 2
+                  }px , ${bounds.y + boundsHeight! - HANDLE_WIDTH / 2}px) `,
+                }}
+                onPointerDown={(e) => {
+                  e.stopPropagation();
+                  onResizeHandlePointerDown(Side.Bottom, bounds);
+                }}
+              />
+            )}
 
             {/* Bottom right */}
-            <rect
-              className="fill-white stroke-blue-500 stroke-1"
-              x={0}
-              y={0}
-              style={{
-                cursor: "nwse-resize",
-                width: `${HANDLE_WIDTH}px`,
-                height: `${HANDLE_WIDTH}px`,
-                transform: `translate(${
-                  bounds.x + bounds.width! - HANDLE_WIDTH / 2
-                }px , ${bounds.y + bounds.height! - HANDLE_WIDTH / 2}px) `,
-              }}
-              onPointerDown={(e) => {
-                e.stopPropagation();
+            {!showOnlyMiddleHandles && (
+              <rect
+                className="fill-white stroke-blue-500 stroke-1"
+                x={0}
+                y={0}
+                style={{
+                  cursor: "nwse-resize",
+                  width: `${HANDLE_WIDTH}px`,
+                  height: `${HANDLE_WIDTH}px`,
+                  transform: `translate(${
+                    bounds.x + boundsWidth! - HANDLE_WIDTH / 2
+                  }px , ${bounds.y + boundsHeight! - HANDLE_WIDTH / 2}px) `,
+                }}
+                onPointerDown={(e) => {
+                  e.stopPropagation();
 
-                onResizeHandlePointerDown(Side.Bottom + Side.Right, bounds);
-              }}
-            />
+                  onResizeHandlePointerDown(Side.Bottom + Side.Right, bounds);
+                }}
+              />
+            )}
           </>
         )}
       </>

@@ -64,7 +64,7 @@ const SelectionMenu: React.FC<SelectionMenuProps> = ({ groups }) => {
   }, [params, groups, router]);
 
   return (
-    <div className="text-center w-full max-w-96 px-1 select-none relative">
+    <div className="text-center w-full max-w-[40vw] px-1 select-none relative">
       {/* Selected group */}
       <SelectionMenuItem
         handleClick={openMenu}

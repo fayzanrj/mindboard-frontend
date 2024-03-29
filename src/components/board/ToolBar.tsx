@@ -14,6 +14,7 @@ import {
 import { TfiLocationArrow } from "react-icons/tfi";
 import ColorPicker from "./ColorPicker";
 import ToolButton from "./ToolButton";
+import { GoHorizontalRule } from "react-icons/go";
 
 // Props
 interface ToolBarProps {
@@ -88,6 +89,20 @@ const ToolBar: React.FC<ToolBarProps> = ({
               isActive={
                 canvasState.mode === CanvasMode.Inserting &&
                 canvasState.layerType === LayerType.Text
+              }
+            />
+            <ToolButton
+              id="line"
+              Icon={GoHorizontalRule}
+              onClick={() =>
+                setCanvasState({
+                  mode: CanvasMode.Inserting,
+                  layerType: LayerType.Line,
+                })
+              }
+              isActive={
+                canvasState.mode === CanvasMode.Inserting &&
+                canvasState.layerType === LayerType.Line
               }
             />
             <ToolButton
