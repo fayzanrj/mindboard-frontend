@@ -61,7 +61,7 @@ const SelectionMenu: React.FC<SelectionMenuProps> = ({ groups }) => {
         router.push(`dashboard/${groups[0]._id}`);
       }
     }
-  }, [params, groups, router]);
+  }, []);
 
   return (
     <div className="text-center w-full max-w-[40vw] px-1 select-none relative">

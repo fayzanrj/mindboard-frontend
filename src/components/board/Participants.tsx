@@ -17,6 +17,7 @@ const Participants = () => {
   return (
     <>
       {isModalOpen && (
+        // Partcipants Modal that contains all the current user's list present in the board
         <ModalLayout
           heading="Partcipants"
           closeModal={toggleModal}
@@ -48,10 +49,13 @@ const Participants = () => {
           </div>
         </ModalLayout>
       )}
+
+      {/* Participants */}
       <div className="min-w-20 px-2 h-11 bg-white shadow-lg rounded-md drop-shadow inline-flex justify-center items-center gap-2 ">
         <ParticipantAvatar
           borderColor={connectionIdToColor(currentUser.connectionId)}
           profilePic={currentUser?.info?.profilePic!}
+          openModal={toggleModal}
         />
 
         {/* Other users */}
@@ -63,6 +67,7 @@ const Participants = () => {
                 key={user.connectionId}
                 borderColor={connectionIdToColor(user.connectionId)}
                 profilePic={user?.info?.profilePic!}
+                openModal={toggleModal}
               />
             ))
         ) : (
@@ -72,6 +77,7 @@ const Participants = () => {
                 key={user.connectionId}
                 borderColor={connectionIdToColor(user.connectionId)}
                 profilePic={user?.info?.profilePic!}
+                openModal={toggleModal}
               />
             ))}
             <button
@@ -93,15 +99,18 @@ export default Participants;
 interface ParticipantAvatarProps {
   borderColor: string;
   profilePic: string;
+  openModal: () => void;
 }
 
 const ParticipantAvatar: React.FC<ParticipantAvatarProps> = ({
   borderColor,
   profilePic,
+  openModal,
 }) => (
   <button
     className="h-9 w-9 rounded-full border-2 overflow-hidden relative"
     style={{ borderColor }}
+    onClick={openModal}
   >
     <Image
       src={profilePic}

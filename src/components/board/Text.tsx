@@ -4,6 +4,7 @@ import { Kalam } from "next/font/google";
 import ContentEditable, { ContentEditableEvent } from "react-contenteditable";
 import { useMutation } from "../../../liveblocks.config";
 import { rgbToHex } from "@/libs/RgbToHex";
+import { useEffect } from "react";
 
 // Font
 const font = Kalam({
@@ -52,6 +53,12 @@ const Text = ({ layer, onPointerDown, id, selectionColor }: TextProps) => {
     target.innerHTML === "" && updateValue("Text");
   };
 
+  useEffect(() => {
+    if (!value) {
+      updateValue("Text");
+    }
+  }, []);
+
   return (
     <foreignObject
       x={x}
@@ -61,7 +68,8 @@ const Text = ({ layer, onPointerDown, id, selectionColor }: TextProps) => {
       onPointerDown={(e) => onPointerDown(e, id)}
     >
       <ContentEditable
-        html={value || "text"}
+        html={value || ""}
+        autoFocus
         onBlur={handleBlur}
         onChange={handleContentChange}
         className={`h-fit w-fit flex items-center justify-center text-center outline-none ${font.className}`}
