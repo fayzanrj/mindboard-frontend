@@ -21,7 +21,6 @@ const CreateBoardModal: React.FC<CreateBoardModalProps> = ({ closeModal }) => {
   // Hooks
   const currentUserId = useUserId();
   const params = useParams();
-  const router = useRouter();
 
   // Form submission
   const handleSubmit = async (e: React.FormEvent) => {
@@ -45,8 +44,6 @@ const CreateBoardModal: React.FC<CreateBoardModalProps> = ({ closeModal }) => {
         }
       );
       toast.success(response.data.message);
-      // Refreshing page to fetch latest data
-      router.refresh();
       // Closing create board modal
       closeModal();
     } catch (error) {

@@ -159,9 +159,7 @@ const BoardListItem: React.FC<BoardProps> = ({
             {/* Person who last updated board his name and time */}
             <p className="text-[0.65rem] text-gray-600 text-nowrap text-ellipsis overflow-hidden">
               {lastUpdatedBy ? lastUpdatedBy.firstName : createdBy.firstName}
-              <span className="">
-                {getLastEditedTime(lastUpdatedBy ? createdAt : updatedAt)}
-              </span>
+              <span>{getLastEditedTime(updatedAt)}</span>
             </p>
           </div>
           {
