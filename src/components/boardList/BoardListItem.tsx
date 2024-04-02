@@ -13,8 +13,14 @@ import { toast } from "sonner";
 import BoardEditNameModal from "../modals/BoardEditNameModal";
 import DeletionConfirmationModal from "../modals/DeletionConfirmationModal";
 import BoardListItemMenu from "./BoardListItemMenu";
+import FavButton from "./FavButton";
 
-const BoardListItem: React.FC<BoardProps> = ({
+// Props
+interface BoardListItemProps extends BoardProps {
+  setBoards: React.Dispatch<React.SetStateAction<BoardProps[]>>;
+}
+
+const BoardListItem: React.FC<BoardListItemProps> = ({
   _id,
   image,
   name,
@@ -24,6 +30,7 @@ const BoardListItem: React.FC<BoardProps> = ({
   createdBy,
   createdAt,
   updatedAt,
+  setBoards,
 }) => {
   // States
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -162,10 +169,13 @@ const BoardListItem: React.FC<BoardProps> = ({
               <span>{getLastEditedTime(updatedAt)}</span>
             </p>
           </div>
-          {
-            // TODO : Connect to backend api
-            //  <FavButton boardId={_id} fav={isFavOf.includes(currentUserId)} />
-          }
+
+          {/* Board fav button */}
+          <FavButton
+            boardId={_id}
+            fav={isFavOf.includes(currentUserId)}
+            setBoards={setBoards}
+          />
         </div>
       </Link>
     </>

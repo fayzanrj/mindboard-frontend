@@ -6,10 +6,13 @@ import BoardProps from "../../props/BoardProps";
 import AddNewBoardButton from "./AddNewBoardButton";
 import BoardListItem from "./BoardListItem";
 import UserProps from "@/props/UserProps";
+
+// Props
 interface BoardsListProps {
   boards: BoardProps[];
   searchParams: {
     createdByUser: boolean;
+    favoriates: boolean;
   };
   groupId: string;
   currentUserId: string;
@@ -22,6 +25,7 @@ const BoardsList: React.FC<BoardsListProps> = ({
   currentUserId,
 }) => {
   const [allBoards, setAllBoards] = useState(boards);
+  const { createdByUser, favoriates } = searchParams;
 
   useEffect(() => {
     // Joining room based on groupId
@@ -85,7 +89,6 @@ const BoardsList: React.FC<BoardsListProps> = ({
     return () => {
       socket.emit("leaveRoom", groupId);
       socket.disconnect();
-      console.log(`${groupId} left`);
     };
   }, [groupId]);
 
@@ -93,19 +96,43 @@ const BoardsList: React.FC<BoardsListProps> = ({
     <div className="p-8">
       {/* Heading */}
       <h2 className="text-3xl sm:text-5xl font-bold">
-        {searchParams.createdByUser ? "Created by You" : "Team Boards"}
+        {!createdByUser && !favoriates && "Team Boards"}
+        {createdByUser && "Created by You"}
+        {favoriates && "Favorite Boards"}
       </h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-5 mt-8 pb-10">
         <AddNewBoardButton />
 
         {allBoards.map((board) => {
-          if (searchParams.createdByUser) {
+          if (createdByUser) {
             if (board.createdBy._id === currentUserId) {
-              return <BoardListItem key={board._id} {...board} />;
+              return (
+                <BoardListItem
+                  key={board._id}
+                  {...board}
+                  setBoards={setAllBoards}
+                />
+              );
+            }
+          } else if (favoriates) {
+            if (board.isFavOf.includes(currentUserId)) {
+              return (
+                <BoardListItem
+                  key={board._id}
+                  {...board}
+                  setBoards={setAllBoards}
+                />
+              );
             }
           } else {
-            return <BoardListItem key={board._id} {...board} />;
+            return (
+              <BoardListItem
+                key={board._id}
+                {...board}
+                setBoards={setAllBoards}
+              />
+            );
           }
         })}
       </div>

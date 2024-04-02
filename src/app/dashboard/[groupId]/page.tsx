@@ -9,6 +9,7 @@ import React from "react";
 interface GroupBoardPageProps {
   searchParams: {
     createdByUser: boolean;
+    favoriates: boolean;
   };
   params: { groupId: string };
 }
