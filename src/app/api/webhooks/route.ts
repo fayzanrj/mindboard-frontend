@@ -72,6 +72,8 @@ export async function POST(req: Request) {
         profilePic: image_url,
       };
 
+      console.log({ user });
+
       try {
         const response = await axios.post(
           `${process.env.SERVER_URL}/api/v1/user/signupwithclerk`,
@@ -83,6 +85,7 @@ export async function POST(req: Request) {
           }
         );
 
+        console.log(response.data);
         if (response) {
           await clerkClient.users.updateUserMetadata(id, {
             publicMetadata: {
@@ -91,6 +94,8 @@ export async function POST(req: Request) {
           });
         }
       } catch (error) {
+        // @ts-ignore
+        console.log(error.data);
         await clerkClient.users.deleteUser(id);
         redirectToSignIn();
       }
