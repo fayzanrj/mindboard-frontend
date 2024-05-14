@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { WebhookEvent } from "@clerk/nextjs/server";
 import axios from "axios";
 import { clerkClient, redirectToSignIn } from "@clerk/nextjs";
+import { access } from "fs/promises";
 
 export async function POST(req: Request) {
   try {
@@ -80,12 +81,17 @@ export async function POST(req: Request) {
           { user },
           {
             headers: {
-              accessToken: process.env.NEXT_PUBLIC_SERVER_ACCESS_TOKEN,
+              accessToken: process.env.SERVER_ACCESS_TOKEN,
             },
           }
         );
 
-        console.log(response.data);
+        console.log({
+          response: response,
+          url: `${process.env.SERVER_URL}/api/v1/user/signupwithclerk`,
+          accessToken: process.env.SERVER_ACCESS_TOKEN,
+        });
+
         if (response) {
           await clerkClient.users.updateUserMetadata(id, {
             publicMetadata: {
@@ -95,7 +101,7 @@ export async function POST(req: Request) {
         }
       } catch (error) {
         // @ts-ignore
-        console.log(error.data);
+        console.log(error);
         await clerkClient.users.deleteUser(id);
         redirectToSignIn();
       }
