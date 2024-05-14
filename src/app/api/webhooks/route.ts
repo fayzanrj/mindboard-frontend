@@ -73,8 +73,6 @@ export async function POST(req: Request) {
         profilePic: image_url,
       };
 
-      console.log({ user });
-
       try {
         const response = await axios.post(
           `${process.env.SERVER_URL}/api/v1/user/signupwithclerk`,
@@ -85,12 +83,6 @@ export async function POST(req: Request) {
             },
           }
         );
-
-        console.log({
-          response: response,
-          url: `${process.env.SERVER_URL}/api/v1/user/signupwithclerk`,
-          accessToken: process.env.SERVER_ACCESS_TOKEN,
-        });
 
         if (response) {
           await clerkClient.users.updateUserMetadata(id, {
